@@ -20,11 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac54a33a-4b6a-46e3-8fa9-a807c1a0c46d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/python/test/test_minimal_reconstruction.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/rrsg_challenge_01.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/rrsg_challenge_01.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/python/rrsg_cgreco/recon.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/rrsg_cgreco/recon.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/python/default.txt" beforeDir="false" afterPath="$PROJECT_DIR$/python/default.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/python/test/test_minimal_reconstruction.py" beforeDir="false" afterPath="$PROJECT_DIR$/python/test/test_minimal_reconstruction.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +38,14 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
   </component>
   <component name="JupyterTrust" id="c8e34d26-18c8-4406-b019-9ea890adede6" />
   <component name="ProjectId" id="1XycWmRSP5ge10onY6LKe0SV0px" />
@@ -150,7 +156,7 @@
       <workItem from="1606308716185" duration="1305000" />
       <workItem from="1610524303132" duration="244000" />
       <workItem from="1611764927285" duration="1061000" />
-      <workItem from="1611821200802" duration="4976000" />
+      <workItem from="1611821200802" duration="8428000" />
     </task>
     <servers />
   </component>
