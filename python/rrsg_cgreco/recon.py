@@ -179,47 +179,23 @@ def read_data(
             noise_scan = h5_dataset[noise_key][()]
         else:
             noise_scan = None
+
         if "Coils" in h5_dataset.keys():
             Coils = h5_dataset["Coils"][()]
         else:
             Coils = None
+
         if "mask" in h5_dataset.keys():
             mask = h5_dataset["mask"][()]
         else:
-            mask = 1
+            mask = None
 
     # Squeeze dummy dimension and transpose to C-style ordering.
     rawdata = np.squeeze(rawdata.T)
 
-    # Derive image dimension and overgridfactor from trajectory
-    center_out_scale = 1
-    if np.allclose(np.round(trajectory[:, 0, :]), 0):
-        print("k-space seems measured center out.")
-        center_out_scale = 2
-
-    image_dim = int(
-        center_out_scale *
-        np.max(
-            np.linalg.norm(
-                trajectory[:, -1, :] - trajectory[:, 0, :], axis=0
-                )
-            )
-        )
-
-    if np.mod(image_dim, 2):
-        print("Uneven image dimension: "+str(image_dim)+", increasing by 1.")
-        image_dim += 1
-
-    overgrid_factor_a = 1/np.linalg.norm(
-        trajectory[:, -2, 0]-trajectory[:, -1, 0])
-    overgrid_factor_b = 1/np.linalg.norm(
-        trajectory[:, 0, 0]-trajectory[:, 1, 0])
-
-    data_par = {}
-    data_par["overgridfactor"] = np.min((overgrid_factor_a,
-                                         overgrid_factor_b))
-    data_par["image_dimension"] = image_dim
-    data_par["mask"] = mask
+    data_par = get_data_par(trajectory)
+    if mask is not None:
+        data_par["mask"] = mask
 
     # Transpose trajectory to projections/reads/position order
     trajectory = (
@@ -228,15 +204,66 @@ def read_data(
         requirements='C'
         )
       )
+
     # Check if rawdata and trajectory dimensions match
     assert trajectory.shape[:-1] == rawdata.shape[-2:], \
         "Rawdata and trajectory should have the same number "\
         "of read/projection pairs."
 
-    if image_dim < 10:
+    if data_par['image_dimension'] < 10:
         image_dim = None
 
     return rawdata, trajectory, noise_scan, data_par, Coils
+
+
+def get_data_par(trajectory):
+    """
+    Create the dictionary `data_par`. Fill it with overgrid factor and iamge dimension
+
+    Args:
+        trajectory:
+
+    Returns:
+
+    """
+    data_par = {}
+    overgrid_factor, image_dim = get_overgrid_imagedim(trajectory)
+    data_par["overgridfactor"] = overgrid_factor
+    data_par["image_dimension"] = image_dim
+    # A default value...
+    data_par["mask"] = 1
+    return data_par
+
+
+def get_overgrid_imagedim(trajectory):
+    """
+    Extract the overgrid factor from the trajectory
+    Args:
+        trajectory: dimensions... x, y, z?
+
+    Returns:
+        overgrid factor, imagedim
+    """
+    center_out_scale = 1
+    if np.allclose(np.round(trajectory[:, 0, :]), 0):
+        print("k-space seems measured center out.")
+        center_out_scale = 2
+
+    trajectory_norm = np.linalg.norm(trajectory[:, -1, :] - trajectory[:, 0, :], axis=0)
+    image_dim = int(center_out_scale * np.max(trajectory_norm))
+
+    if np.mod(image_dim, 2):
+        print("Uneven image dimension: "+str(image_dim)+", increasing by 1.")
+        image_dim += 1
+
+    overgrid_factor_a = 1/np.linalg.norm(
+        trajectory[:, -2, 0] - trajectory[:, -1, 0])
+    overgrid_factor_b = 1/np.linalg.norm(
+        trajectory[:, 0, 0] - trajectory[:, 1, 0])
+
+    overgrid_factor = min(overgrid_factor_a, overgrid_factor_b)
+
+    return overgrid_factor, image_dim
 
 
 def setup_parameter_dict(
@@ -262,7 +289,7 @@ def setup_parameter_dict(
             The associated trajectory data
         data_par (dcit):
             The image grid dimension and
-            overgrid factor, dervied from the trajectory
+            overgrid factor, derived from the trajectory
 
     Returns
     -------
@@ -310,6 +337,11 @@ def setup_parameter_dict(
                         parameter[section_key][value_key] = config.get(
                             section_key,
                             value_key)
+
+    # If this function is called without data_par argument
+    # Then it can be fixed. No mask is added though.
+    if data_par is None:
+        data_par = get_data_par(trajectory)
 
     parameter["Data"] = {**parameter["Data"], **data_par}
     if parameter["Data"]["precision"].lower() == "single":
